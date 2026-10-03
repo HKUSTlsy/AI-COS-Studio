@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.ai-cos/schemas/face-profile.schema.json",
+  "title": "FaceProfile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "name",
+    "sourceType",
+    "authorizationConfirmed",
+    "images",
+    "coverImage",
+    "coverAngle",
+    "version",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "id": { "type": "string", "pattern": "^face-" },
+    "name": { "type": "string", "minLength": 1 },
+    "sourceType": { "enum": ["preset", "private"] },
+    "authorizationConfirmed": { "type": "boolean" },
+    "images": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "items": { "$ref": "#/$defs/image" }
+    },
+    "coverImage": { "type": ["string", "null"] },
+    "coverAngle": { "enum": ["front", "three_quarter", "profile"] },
+    "version": { "type": "integer", "minimum": 1 },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "image": {
+      "type": "object",
+      "required": ["path", "url", "bytes", "mime", "angle"],
+      "properties": {
+        "path": { "type": "string" },
+        "url": { "type": "string" },
+        "bytes": { "type": "integer", "minimum": 1 },
+        "mime": { "enum": ["image/png", "image/jpeg", "image/webp"] },
+        "angle": { "enum": ["front", "three_quarter", "profile"] }
+      }
+    }
+  }
+}

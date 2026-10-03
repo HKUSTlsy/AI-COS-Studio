@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.ai-cos/schemas/photography-pack-import.schema.json",
+  "title": "PhotographyPackImport",
+  "type": "object",
+  "required": ["id", "title", "packKind", "sourceType", "sourceHash", "rawFile", "sourceFiles", "status", "executionRuns", "activeRunId", "createdAt", "updatedAt"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^pack-import-" },
+    "title": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "packKind": { "enum": ["variable_pool", "series_plan"] },
+    "sourceType": { "enum": ["paste", "github"] },
+    "sourceUrl": { "type": ["string", "null"] },
+    "sourceHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "rawFile": { "type": "string" },
+    "sourceFiles": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "required": ["path", "hash", "bytes"],
+        "properties": {
+          "path": { "type": "string" },
+          "hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "bytes": { "type": "integer", "minimum": 0 },
+          "rawFile": { "type": "string" },
+          "resolvedUrl": { "type": "string" }
+        }
+      }
+    },
+    "revision": { "type": ["string", "null"] },
+    "licenseSnapshot": { "type": ["string", "null"] },
+    "status": { "enum": ["queued", "running", "draft_ready", "completed", "failed", "interrupted"] },
+    "draft": { "type": ["object", "null"] },
+    "packId": { "type": ["string", "null"] },
+    "executionRuns": { "type": "array" },
+    "activeRunId": { "type": ["string", "null"] },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  }
+}

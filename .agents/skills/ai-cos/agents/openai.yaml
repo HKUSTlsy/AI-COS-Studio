@@ -1,0 +1,8 @@
+interface:
+  display_name: "AI COS Studio"
+  short_description: "解析角色与随机/系列摄影方案，生成并验收创意重拍"
+  brand_color: "#A970FF"
+  default_prompt: "使用 $ai-cos 读取并完成当前 AI COS Studio 后台任务，严格按任务类型写回结果。"
+
+policy:
+  allow_implicit_invocation: true

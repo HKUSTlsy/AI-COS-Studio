@@ -1,0 +1,263 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.ai-cos/schemas/generation-job.schema.json",
+  "title": "GenerationJob v5",
+  "$defs": {
+    "multiPerson": {
+      "type": ["object", "null"],
+      "required": ["version", "participants", "event", "medium"],
+      "properties": {
+        "version": { "const": 1 },
+        "event": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "medium": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "participants": {
+          "type": "array", "minItems": 2, "maxItems": 4,
+          "items": {
+            "type": "object",
+            "required": ["label", "jobId", "outputId", "sourceImage", "context", "position", "adultConfirmed", "wardrobe"],
+            "properties": {
+              "label": { "enum": ["A", "B", "C", "D"] },
+              "adultConfirmed": { "const": true },
+              "wardrobe": { "enum": ["locked", "swimwear"] }
+            }
+          }
+        }
+      }
+    },
+    "outputResolution": {
+      "type": "object",
+      "required": ["version", "mode", "control", "aspectRatio", "pixelWidth", "pixelHeight", "experimental"],
+      "properties": {
+        "version": { "const": "max-native-v1" },
+        "mode": { "const": "maximum_native" },
+        "control": { "const": "prompt_only" },
+        "aspectRatio": { "enum": ["source", "1:1", "4:3", "3:4", "16:9", "9:16"] },
+        "pixelWidth": { "type": ["integer", "null"], "minimum": 16, "maximum": 3840, "multipleOf": 16 },
+        "pixelHeight": { "type": ["integer", "null"], "minimum": 16, "maximum": 3840, "multipleOf": 16 },
+        "experimental": { "type": "boolean" }
+      }
+    },
+    "resolutionCheck": {
+      "type": "object",
+      "required": ["status", "pixelWidth", "pixelHeight"],
+      "properties": {
+        "status": { "enum": ["matched", "below_target", "different_ratio", "different_size", "unknown"] },
+        "pixelWidth": { "type": ["integer", "null"], "minimum": 1 },
+        "pixelHeight": { "type": ["integer", "null"], "minimum": 1 }
+      }
+    }
+  },
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "id",
+    "title",
+    "characterId",
+    "workflowStep",
+    "referenceVersion",
+    "references",
+    "characterCard",
+    "characterCardVersion",
+    "configurationVersion",
+    "aspectRatio",
+    "baselineVersions",
+    "adjustmentVersions",
+    "reshootBatches",
+    "reshootVersions",
+    "activeReshootBatchId",
+    "executionRuns",
+    "activeRunId",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 5 },
+    "id": { "type": "string", "pattern": "^job-" },
+    "title": { "type": "string", "minLength": 1 },
+    "characterId": { "type": "string" },
+    "workflowStep": {
+      "enum": ["references", "character_card", "configuration", "adjustment"]
+    },
+    "referenceVersion": { "type": "integer", "minimum": 1 },
+    "references": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["path", "url", "role", "purpose"],
+        "properties": {
+          "path": { "type": "string" },
+          "url": { "type": "string" },
+          "role": { "type": "string" },
+          "purpose": { "type": "string" }
+        }
+      }
+    },
+    "characterCard": { "$ref": "character-profile.schema.json" },
+    "characterCardVersion": { "type": "integer", "minimum": 0 },
+    "faceProfileId": { "type": ["string", "null"] },
+    "styleModuleId": { "type": ["string", "null"] },
+    "configurationVersion": { "type": "integer", "minimum": 0 },
+    "aspectRatio": {
+      "enum": ["source", "1:1", "4:3", "3:4", "16:9", "9:16"]
+    },
+    "compiledPrompt": { "type": "string" },
+    "outputResolution": { "$ref": "#/$defs/outputResolution" },
+    "compiledAdjustmentPrompt": { "type": "string" },
+    "baselineVersions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "version", "fileName", "path", "url", "backend"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^baseline-v\\d{3}$" },
+          "kind": { "const": "baseline" },
+          "outputResolution": { "$ref": "#/$defs/outputResolution" },
+          "resolutionCheck": { "$ref": "#/$defs/resolutionCheck" },
+          "version": { "type": "integer", "minimum": 1 },
+          "fileName": { "type": "string" },
+          "path": { "type": "string" },
+          "url": { "type": "string" }
+          ,"backend": {
+            "enum": ["built-in-imagegen", "chatgpt-web-manual"]
+          }
+          ,"aspectRatio": {
+            "enum": ["source", "1:1", "4:3", "3:4", "16:9", "9:16"]
+          },
+          "pixelWidth": { "type": "integer", "minimum": 1 },
+          "pixelHeight": { "type": "integer", "minimum": 1 },
+          "actualRatio": { "type": "string" }
+        }
+      }
+    },
+    "adjustmentVersions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "version",
+          "sourceOutputId",
+          "category",
+          "request",
+          "path",
+          "url",
+          "backend"
+        ],
+        "properties": {
+          "id": { "type": "string", "pattern": "^adjustment-v\\d{3}$" },
+          "kind": { "const": "adjustment" },
+          "outputResolution": { "$ref": "#/$defs/outputResolution" },
+          "resolutionCheck": { "$ref": "#/$defs/resolutionCheck" },
+          "version": { "type": "integer", "minimum": 1 },
+          "sourceOutputId": { "type": "string" },
+          "category": {
+            "enum": [
+              "pose",
+              "outfit",
+              "background",
+              "body_proportion",
+              "makeup",
+              "hair_accessory",
+              "camera_lighting",
+              "other"
+            ]
+          },
+          "request": { "type": "string" },
+          "adjustmentReference": { "type": ["object", "null"] },
+          "sourceAspectRatio": { "type": "string" },
+          "path": { "type": "string" },
+          "url": { "type": "string" }
+          ,"backend": {
+            "enum": ["built-in-imagegen", "chatgpt-web-manual"]
+          }
+        }
+      }
+    },
+    "reshootBatches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "mode", "status", "sourceOutputId", "packSnapshot", "quantity", "aspectRatio", "allowOutfit", "adultConfirmed", "locks", "variants"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^reshoot-batch-" },
+          "outputResolution": { "$ref": "#/$defs/outputResolution" },
+          "mode": { "enum": ["variable_pool", "series_plan", "multi_person", "full_prompt"] },
+          "multiPerson": { "$ref": "#/$defs/multiPerson" },
+          "status": { "enum": ["draft", "plan_ready", "queued", "running", "waiting_user", "succeeded", "partial", "failed", "interrupted", "cancelled"] },
+          "sourceOutputId": { "type": "string" },
+          "quantity": { "type": "integer", "minimum": 1, "maximum": 4 },
+          "aspectRatio": { "enum": ["source", "1:1", "4:3", "3:4", "16:9", "9:16"] },
+          "allowOutfit": { "type": "boolean" },
+          "adultConfirmed": { "type": "boolean" },
+          "locks": { "type": "object" },
+          "packSnapshot": { "type": ["object", "null"] },
+          "templateSnapshot": { "type": ["object", "null"] },
+          "adaptationDraft": { "type": ["object", "null"] },
+          "creativePolicy": { "type": "object", "properties": { "mode": { "enum": ["original", "character"] }, "outfitSource": { "enum": ["template", "text", "reference"] }, "propPolicy": { "enum": ["preserve", "free"] } } },
+          "photographyReferences": { "type": "array", "maxItems": 8 },
+          "seriesPlanDraft": { "type": ["object", "null"] },
+          "diagnosticOutputId": { "type": ["string", "null"] },
+          "variants": { "type": "array", "maxItems": 4 }
+        }
+      }
+    },
+    "reshootVersions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "mode", "version", "sourceOutputId", "batchId", "variantId", "prompt", "path", "url", "backend"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^reshoot-v\\d{3}$" },
+          "kind": { "const": "reshoot" },
+          "outputResolution": { "$ref": "#/$defs/outputResolution" },
+          "resolutionCheck": { "$ref": "#/$defs/resolutionCheck" },
+          "version": { "type": "integer", "minimum": 1 },
+          "sourceOutputId": { "type": "string" },
+          "batchId": { "type": "string" },
+          "variantId": { "type": "string" },
+          "mode": { "enum": ["variable_pool", "series_plan", "multi_person", "full_prompt"] },
+          "multiPerson": { "$ref": "#/$defs/multiPerson" },
+          "prompt": { "type": "string", "minLength": 1 },
+          "path": { "type": "string" },
+          "url": { "type": "string" },
+          "backend": { "enum": ["built-in-imagegen", "chatgpt-web-manual"] },
+          "seriesPlanSnapshot": { "type": ["object", "null"] },
+          "shotSpec": { "type": ["object", "null"] },
+          "referenceRoles": { "type": "array" },
+          "diagnosticOutputId": { "type": ["string", "null"] },
+          "qualityReview": { "type": ["object", "null"] }
+        }
+      }
+    },
+    "executionRuns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "status", "events", "createdAt", "backend", "handoff"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^run-" },
+          "kind": { "enum": ["analysis", "baseline", "adjustment", "reshoot", "series_deconstruct", "prompt_adapt"] },
+          "status": {
+            "enum": ["queued", "running", "waiting_user", "succeeded", "failed", "interrupted"]
+          },
+          "backend": {
+            "enum": ["built-in-imagegen", "chatgpt-web-manual", null]
+          },
+          "handoff": { "type": ["object", "null"] },
+          "events": { "type": "array" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "activeRunId": { "type": ["string", "null"] },
+    "activeReshootBatchId": { "type": ["string", "null"] },
+    "selectedOutputId": { "type": ["string", "null"] },
+    "backend": {
+      "enum": ["built-in-imagegen", "chatgpt-web-manual", null]
+    },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  }
+}

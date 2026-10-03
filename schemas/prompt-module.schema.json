@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.ai-cos/schemas/prompt-module.schema.json",
+  "title": "PromptModule",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "name",
+    "category",
+    "rawText",
+    "normalizedText",
+    "avoid",
+    "tags",
+    "version",
+    "source",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "id": { "type": "string" },
+    "name": { "type": "string", "minLength": 1 },
+    "category": {
+      "enum": [
+        "style",
+        "camera_angle",
+        "scene_lighting",
+        "pose",
+        "outfit",
+        "body_proportion",
+        "makeup",
+        "hair_accessory"
+      ]
+    },
+    "rawText": { "type": "string" },
+    "normalizedText": { "type": "string", "minLength": 1 },
+    "avoid": { "type": "array", "items": { "type": "string" } },
+    "tags": { "type": "array", "items": { "type": "string" } },
+    "thumbnail": { "type": ["string", "null"] },
+    "version": { "type": "integer", "minimum": 1 },
+    "source": { "enum": ["preset", "user"] },
+    "sourceImportId": { "type": "string" },
+    "archivedAt": { "type": ["string", "null"] },
+    "versions": { "type": "array", "items": { "$ref": "#" } },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceUrl", "method"],
+      "properties": {
+        "sourceUrl": { "type": "string" },
+        "method": { "type": "string" },
+        "revision": { "type": "string" },
+        "ruleVersion": { "type": "string" },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["caseId", "title", "adaptation", "url"],
+            "properties": {
+              "caseId": { "type": "integer" },
+              "title": { "type": "string" },
+              "adaptation": { "type": "string" },
+              "url": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  }
+}

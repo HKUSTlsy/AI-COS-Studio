@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.ai-cos/schemas/prompt-import.schema.json",
+  "title": "PromptImport",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "rawText",
+    "status",
+    "drafts",
+    "moduleIds",
+    "executionRuns",
+    "activeRunId",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "id": { "type": "string", "pattern": "^prompt-import-" },
+    "title": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "rawText": { "type": "string", "minLength": 1, "maxLength": 30000 },
+    "status": {
+      "enum": [
+        "queued",
+        "running",
+        "draft_ready",
+        "completed",
+        "failed",
+        "interrupted"
+      ]
+    },
+    "drafts": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "required": [
+          "draftId",
+          "name",
+          "category",
+          "rawText",
+          "normalizedText",
+          "avoid",
+          "tags",
+          "included"
+        ],
+        "properties": {
+          "draftId": { "type": "string" },
+          "name": { "type": "string", "minLength": 1 },
+          "category": {
+            "enum": [
+              "style",
+              "camera_angle",
+              "scene_lighting",
+              "pose",
+              "outfit",
+              "body_proportion",
+              "makeup",
+              "hair_accessory"
+            ]
+          },
+          "rawText": { "type": "string", "minLength": 1 },
+          "normalizedText": { "type": "string", "minLength": 1 },
+          "avoid": { "type": "array", "items": { "type": "string" } },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "included": { "type": "boolean" }
+        }
+      }
+    },
+    "moduleIds": { "type": "array", "items": { "type": "string" } },
+    "executionRuns": { "type": "array" },
+    "activeRunId": { "type": ["string", "null"] },
+    "error": { "type": ["object", "null"] },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  }
+}

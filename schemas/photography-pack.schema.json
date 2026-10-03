@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.ai-cos/schemas/photography-pack.schema.json",
+  "title": "PhotographyPack",
+  "type": "object",
+  "required": ["id", "kind", "name", "globalStyle", "avoid", "excludedDefaults", "version", "source"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^pack-" },
+    "kind": { "enum": ["variable_pool", "series_plan"] },
+    "name": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "description": { "type": "string" },
+    "globalStyle": { "type": "string", "minLength": 1 },
+    "pools": {
+      "type": "object",
+      "required": ["expression", "outfitStyle", "scene", "moment", "shotScale", "focalLength", "cameraPosition", "composition", "foreground", "lighting", "palette", "captureState"],
+      "properties": {
+        "expression": { "$ref": "#/$defs/stringPool" },
+        "outfitStyle": { "$ref": "#/$defs/stringPool" },
+        "scene": { "$ref": "#/$defs/stringPool" },
+        "moment": { "$ref": "#/$defs/stringPool" },
+        "shotScale": { "$ref": "#/$defs/stringPool" },
+        "focalLength": { "$ref": "#/$defs/stringPool" },
+        "cameraPosition": { "$ref": "#/$defs/stringPool" },
+        "composition": { "$ref": "#/$defs/stringPool" },
+        "foreground": { "$ref": "#/$defs/stringPool" },
+        "lighting": { "$ref": "#/$defs/stringPool" },
+        "palette": { "$ref": "#/$defs/stringPool" },
+        "captureState": { "$ref": "#/$defs/stringPool" }
+      }
+    },
+    "avoid": { "$ref": "#/$defs/stringPool" },
+    "groupInteractions": { "$ref": "#/$defs/stringPool" },
+    "imagingMedia": { "$ref": "#/$defs/stringPool" },
+    "tags": { "$ref": "#/$defs/stringPool" },
+    "excludedDefaults": { "$ref": "#/$defs/stringPool" },
+    "rules": { "type": "object" },
+    "seriesDNA": { "$ref": "#/$defs/seriesDNA" },
+    "imagingProfile": { "$ref": "#/$defs/imagingProfile" },
+    "visualHierarchy": { "$ref": "#/$defs/visualHierarchy" },
+    "workflowRules": { "$ref": "#/$defs/workflowRules" },
+    "qualityGates": { "$ref": "#/$defs/stringPool" },
+    "version": { "type": "integer", "minimum": 1 },
+    "source": { "type": "object" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "kind": { "const": "variable_pool" } } },
+      "then": {
+        "required": ["pools", "rules"],
+        "properties": { "rules": { "$ref": "#/$defs/variableRules" } }
+      }
+    },
+    {
+      "if": { "properties": { "kind": { "const": "series_plan" } } },
+      "then": {
+        "required": ["seriesDNA", "imagingProfile", "visualHierarchy", "workflowRules", "qualityGates", "rules"],
+        "properties": { "rules": { "$ref": "#/$defs/seriesRules" } }
+      }
+    }
+  ],
+  "$defs": {
+    "stringPool": {
+      "type": "array",
+      "maxItems": 100,
+      "items": { "type": "string", "minLength": 1, "maxLength": 500 }
+    },
+    "seriesDNA": {
+      "type": "object",
+      "required": ["themeFramework", "editorialTone", "makeupSystem", "hairSystem", "outfitSystem", "sceneSystem", "propSystem"],
+      "additionalProperties": false,
+      "properties": {
+        "themeFramework": { "type": "string" },
+        "editorialTone": { "type": "string" },
+        "makeupSystem": { "type": "string" },
+        "hairSystem": { "type": "string" },
+        "outfitSystem": { "type": "string" },
+        "sceneSystem": { "type": "string" },
+        "propSystem": { "type": "string" }
+      }
+    },
+    "imagingProfile": {
+      "type": "object",
+      "required": ["whiteBalance", "colorCast", "blackPoint", "highlightRollOff", "sharpness", "microContrast", "softening", "noiseCompression", "depthOfField"],
+      "additionalProperties": false,
+      "properties": {
+        "whiteBalance": { "type": "string" },
+        "colorCast": { "type": "string" },
+        "blackPoint": { "type": "string" },
+        "highlightRollOff": { "type": "string" },
+        "sharpness": { "type": "string" },
+        "microContrast": { "type": "string" },
+        "softening": { "type": "string" },
+        "noiseCompression": { "type": "string" },
+        "depthOfField": { "type": "string" }
+      }
+    },
+    "visualHierarchy": {
+      "type": "object",
+      "required": ["subjectClarity", "dominantShapes", "secondaryDetails", "lowDetailSpace"],
+      "additionalProperties": false,
+      "properties": {
+        "subjectClarity": { "type": "string" },
+        "dominantShapes": { "type": "string" },
+        "secondaryDetails": { "type": "string" },
+        "lowDetailSpace": { "type": "string" }
+      }
+    },
+    "workflowRules": {
+      "type": "object",
+      "required": ["referenceAssignment", "lightingTopology", "subjectEventCausality", "storyboardDiversity", "antiCommercialPolish", "redoPolicy"],
+      "additionalProperties": false,
+      "properties": {
+        "referenceAssignment": { "type": "string" },
+        "lightingTopology": { "type": "string" },
+        "subjectEventCausality": { "type": "string" },
+        "storyboardDiversity": { "type": "string" },
+        "antiCommercialPolish": { "type": "string" },
+        "redoPolicy": { "type": "string" }
+      }
+    },
+    "variableRules": {
+      "type": "object",
+      "required": ["userLocksWin", "avoidBatchDuplicates", "candidOcclusion", "outfitEnabledByDefault"],
+      "properties": {
+        "userLocksWin": { "const": true },
+        "avoidBatchDuplicates": { "const": true },
+        "candidOcclusion": { "enum": ["none", "full"] },
+        "outfitEnabledByDefault": { "const": false }
+      }
+    },
+    "seriesRules": {
+      "type": "object",
+      "required": ["userLocksWin", "identityFromStudioOnly", "photoReferenceIdentity", "outfitEnabledByDefault", "resetToOriginalInputs", "generatedInputsOnRedo", "watermarkEnabledByDefault"],
+      "properties": {
+        "userLocksWin": { "const": true },
+        "identityFromStudioOnly": { "const": true },
+        "photoReferenceIdentity": { "const": false },
+        "outfitEnabledByDefault": { "const": false },
+        "resetToOriginalInputs": { "const": true },
+        "generatedInputsOnRedo": { "const": false },
+        "watermarkEnabledByDefault": { "const": false }
+      }
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.ai-cos/schemas/character-profile.schema.json",
+  "title": "CharacterProfile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "hairstyle",
+    "hairAccessories",
+    "iris",
+    "makeup",
+    "bodySilhouette",
+    "outfitLayers",
+    "colors",
+    "materials",
+    "accessories",
+    "footwear"
+  ],
+  "properties": {
+    "hairstyle": { "$ref": "#/$defs/field" },
+    "hairAccessories": { "$ref": "#/$defs/field" },
+    "iris": { "$ref": "#/$defs/field" },
+    "makeup": { "$ref": "#/$defs/field" },
+    "bodySilhouette": { "$ref": "#/$defs/field" },
+    "outfitLayers": { "$ref": "#/$defs/field" },
+    "colors": { "$ref": "#/$defs/field" },
+    "materials": { "$ref": "#/$defs/field" },
+    "accessories": { "$ref": "#/$defs/field" },
+    "footwear": { "$ref": "#/$defs/field" }
+  },
+  "$defs": {
+    "field": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "certainty", "strongLock"],
+      "properties": {
+        "value": { "type": "string" },
+        "certainty": { "enum": ["observed", "inferred", "user_confirmed"] },
+        "strongLock": { "type": "boolean" }
+      }
+    }
+  }
+}
